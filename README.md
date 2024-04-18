@@ -6,7 +6,7 @@
     $ go build ./sjs.go
     $ ./sjs -help
 ```
-- example use
+- for example use
 ```bash
     $ ./sjs -url https://website.com -api https://api.website.com/ 
 ```
