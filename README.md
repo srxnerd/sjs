@@ -3,6 +3,8 @@
 ```bash
     $ git clone https://github.com/srxnerd/sjs.git
     $ cd sjs
+    $ go mod init sjs
+    $ go mod download github.com/pkg/profile
     $ go build ./sjs.go
     $ ./sjs -help
 ```
