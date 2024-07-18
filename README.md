@@ -10,5 +10,6 @@
 ```
 - for example use
 ```bash
-    $ ./sjs -url https://website.com -api https://api.website.com/ 
+    $ ./sjs -url https://bitcoin.org -api https://bitcoin.org
+
 ```
