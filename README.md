@@ -14,3 +14,4 @@
     $ ./sjs -url https://bitcoin.org -api https://bitcoin.org
 
 ```
+![2024-07-25_16-27](https://github.com/user-attachments/assets/3b739505-9b89-4a8b-b10f-b49ae4bdf996)
