@@ -18,14 +18,17 @@ import (
 	"github.com/janeczku/go-spinner"
 )
 
-type arrayFlags []string
+// StringSlice is a custom type that implements the flag.Value interface
+type StringSlice []string
 
-func (i *arrayFlags) String() string {
-	return "my string representation"
+// String method returns the string representation of the StringSlice
+func (s *StringSlice) String() string {
+	return strings.Join(*s, " ")
 }
 
-func (i *arrayFlags) Set(value string) error {
-	*i = append(*i, value)
+// Set method allows you to set values for the StringSlice
+func (s *StringSlice) Set(value string) error {
+	*s = append(*s, value)
 	return nil
 }
 
@@ -214,12 +217,9 @@ func CheckEndpointStatusBurpProxy(proxy string, urlapi string, craetelinkcheck s
 		fmt.Println("Error creating request:", err)
 		os.Exit(1)
 	}
-	// if headerinput != "" {
-	// 	tokenGET := strings.Split(headerinput, ":")
-	// 	req.Header.Set(tokenGET[0], tokenGET[1])
-	// }
+
 	for _, header := range headerinput {
-		tokenGET := strings.Split(header, ":")
+		tokenGET := strings.Split(header, ": ")
 		if len(tokenGET) == 2 {
 			req.Header.Set(strings.TrimSpace(tokenGET[0]), strings.TrimSpace(tokenGET[1]))
 		}
@@ -271,6 +271,7 @@ func CheckEndpointStatus(urlapi string, craetelinkcheck string, headerinput []st
 		fmt.Println("Error creating request:", err)
 		return
 	}
+
 	for _, header := range headerinput {
 		tokenGET := strings.Split(header, ":")
 		if len(tokenGET) == 2 {
@@ -334,9 +335,8 @@ func main() {
 	api := flag.String("a", "", "url api target: https://api.site.com")
 	var ms string
 	flag.StringVar(&ms, "ms", "", "this flag for filter status code ")
-	var headerinput arrayFlags
+	var headerinput StringSlice
 	flag.Var(&headerinput, "H", "this flag for set header requets")
-
 	proxyURL := flag.String("p", "", "HTTP proxy address (e.g., http://127.0.0.1:8080)")
 
 	// flag dom
