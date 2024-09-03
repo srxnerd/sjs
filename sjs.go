@@ -273,7 +273,7 @@ func CheckEndpointStatus(urlapi string, craetelinkcheck string, headerinput []st
 	}
 
 	for _, header := range headerinput {
-		tokenGET := strings.Split(header, ":")
+		tokenGET := strings.Split(header, ": ")
 		if len(tokenGET) == 2 {
 			req.Header.Set(strings.TrimSpace(tokenGET[0]), strings.TrimSpace(tokenGET[1]))
 		}
