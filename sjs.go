@@ -18,6 +18,17 @@ import (
 	"github.com/janeczku/go-spinner"
 )
 
+type arrayFlags []string
+
+func (i *arrayFlags) String() string {
+	return "my string representation"
+}
+
+func (i *arrayFlags) Set(value string) error {
+	*i = append(*i, value)
+	return nil
+}
+
 // color print
 const (
 	Reset   = "\033[0m"
@@ -184,7 +195,7 @@ func requestsMain(url string) []string {
 
 }
 
-func CheckEndpointStatusBurpProxy(proxy, urlapi, craetelinkcheck, headerinput, ms string) {
+func CheckEndpointStatusBurpProxy(proxy string, urlapi string, craetelinkcheck string, headerinput []string, ms string) {
 	proxyURL, err := url.Parse(proxy)
 	if err != nil {
 		fmt.Println("Error parsing proxy URL:", err)
@@ -203,9 +214,15 @@ func CheckEndpointStatusBurpProxy(proxy, urlapi, craetelinkcheck, headerinput, m
 		fmt.Println("Error creating request:", err)
 		os.Exit(1)
 	}
-	if headerinput != "" {
-		tokenGET := strings.Split(headerinput, ":")
-		req.Header.Set(tokenGET[0], tokenGET[1])
+	// if headerinput != "" {
+	// 	tokenGET := strings.Split(headerinput, ":")
+	// 	req.Header.Set(tokenGET[0], tokenGET[1])
+	// }
+	for _, header := range headerinput {
+		tokenGET := strings.Split(header, ":")
+		if len(tokenGET) == 2 {
+			req.Header.Set(strings.TrimSpace(tokenGET[0]), strings.TrimSpace(tokenGET[1]))
+		}
 	}
 
 	resp, err := client_api.Do(req)
@@ -241,7 +258,7 @@ func CheckEndpointStatusBurpProxy(proxy, urlapi, craetelinkcheck, headerinput, m
 
 }
 
-func CheckEndpointStatus(urlapi, craetelinkcheck, headerinput, flag_ms string) {
+func CheckEndpointStatus(urlapi string, craetelinkcheck string, headerinput []string, flag_ms string) {
 
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -254,9 +271,11 @@ func CheckEndpointStatus(urlapi, craetelinkcheck, headerinput, flag_ms string) {
 		fmt.Println("Error creating request:", err)
 		return
 	}
-	if headerinput != "" {
-		tokenGET := strings.Split(headerinput, ":")
-		req.Header.Set(tokenGET[0], tokenGET[1])
+	for _, header := range headerinput {
+		tokenGET := strings.Split(header, ":")
+		if len(tokenGET) == 2 {
+			req.Header.Set(strings.TrimSpace(tokenGET[0]), strings.TrimSpace(tokenGET[1]))
+		}
 	}
 
 	resp, err := client.Do(req)
@@ -311,15 +330,14 @@ func removeAllExtensions(input string) string {
 }
 
 func main() {
-	name := flag.String("url", "", "url target: https://site.com")
-	api := flag.String("api", "", "url api target: https://api.site.com")
+	name := flag.String("u", "", "url target: https://site.com")
+	api := flag.String("a", "", "url api target: https://api.site.com")
 	var ms string
 	flag.StringVar(&ms, "ms", "", "this flag for filter status code ")
-	var headerinput string
-	flag.StringVar(&headerinput, "header", "", "this flag for set header requets")
+	var headerinput arrayFlags
+	flag.Var(&headerinput, "H", "this flag for set header requets")
 
-	// flag.BoolVar(&useProxy, "proxy", false, "Use proxy")
-	proxyURL := flag.String("proxy", "", "HTTP proxy address (e.g., http://127.0.0.1:8080)")
+	proxyURL := flag.String("p", "", "HTTP proxy address (e.g., http://127.0.0.1:8080)")
 
 	// flag dom
 	// dom := flag.Bool("dom", false, "flag dom defualt is false")
@@ -341,7 +359,6 @@ func main() {
 
 	for _, link := range craetelinkcheck {
 		if *proxyURL != "" {
-
 			CheckEndpointStatusBurpProxy(*proxyURL, *api, link, headerinput, ms)
 
 		} else {
